@@ -1,103 +1,84 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "../include/hash_table.h"
-#include "../include/colors.h"
 
-void initHash(HashTable* hash) {
+// Inicializa a tabela hash
+void initHashTable(HashTable *table) {
 
-    hash->collisions = 0;
-
-    for(int i = 0; i < TABLE_SIZE; i++) {
-
-        hash->table[i] = NULL;
-    }
-}
-
-int hashFunction(char* ip) {
-
-    int sum = 0;
-
-    for(int i = 0; ip[i] != '\0'; i++) {
-
-        sum += ip[i];
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        table->buckets[i] = NULL;
     }
 
-    return sum % TABLE_SIZE;
+    table->collisions = 0;
 }
 
-void insertHash(HashTable* hash,
-                char* ip,
-                int packetId) {
+// Função hash
+int hashFunction(int key) {
+    return key % TABLE_SIZE;
+}
 
-    int index = hashFunction(ip);
+// Inserção usando encadeamento separado
+void insertHash(HashTable *table, Packet packet) {
 
-    if(hash->table[index] != NULL) {
+    int index = hashFunction(packet.id);
 
-        printf(YELLOW
-               "\n[COLISAO DETECTADA]"
-               RESET
-               " indice %d ocupado.\n",
-               index);
-
-        hash->collisions++;
+    // Detecta colisão
+    if (table->buckets[index] != NULL) {
+        table->collisions++;
     }
 
-    HashNode* newNode =
-        (HashNode*) malloc(sizeof(HashNode));
+    // Cria novo nó
+    HashNode *newNode = malloc(sizeof(HashNode));
 
-    strcpy(newNode->ip, ip);
+    if (newNode == NULL) {
+        printf("Erro de alocação de memória\n");
+        return;
+    }
 
-    newNode->packetId = packetId;
+    newNode->data = packet;
 
-    newNode->next = hash->table[index];
+    // Insere no início da lista
+    newNode->next = table->buckets[index];
 
-    hash->table[index] = newNode;
+    table->buckets[index] = newNode;
 }
 
-int searchHash(HashTable* hash,
-               char* ip) {
+// Busca um pacote na tabela hash
+Packet *searchHash(HashTable *table, int id) {
 
-    int index = hashFunction(ip);
+    int index = hashFunction(id);
 
-    HashNode* current = hash->table[index];
+    HashNode *current = table->buckets[index];
 
-    while(current != NULL) {
+    // Percorre lista encadeada
+    while (current != NULL) {
 
-        if(strcmp(current->ip, ip) == 0)
-            return 1;
+        if (current->data.id == id) {
+            return &current->data;
+        }
 
         current = current->next;
     }
 
-    return 0;
+    return NULL;
 }
 
-void showHash(HashTable* hash) {
+// Exibe tabela hash
+void printHashTable(HashTable *table) {
 
-    printf(CYAN
-           "\n===================================\n");
-    printf("      ESTADO DA TABELA HASH\n");
-    printf("===================================\n"
-           RESET);
+    printf("\n========== TABELA HASH ==========\n");
 
-    for(int i = 0; i < TABLE_SIZE; i++) {
+    for (int i = 0; i < TABLE_SIZE; i++) {
 
-        printf(BLUE "[%d] -> " RESET, i);
+        printf("[%d] -> ", i);
 
-        HashNode* current =
-            hash->table[i];
+        HashNode *current = table->buckets[i];
 
-        while(current != NULL) {
+        while (current != NULL) {
 
-            printf(GREEN
-                   "IP:%s(P%d)"
-                   RESET
-                   " -> ",
-                   current->ip,
-                   current->packetId);
+            printf("ID:%d -> ",
+                   current->data.id);
 
             current = current->next;
         }
@@ -105,22 +86,20 @@ void showHash(HashTable* hash) {
         printf("NULL\n");
     }
 
-    printf(YELLOW
-           "\nTotal de colisoes: %d\n"
-           RESET,
-           hash->collisions);
+    printf("\nTotal de colisões: %d\n",
+           table->collisions);
 }
 
-void freeHash(HashTable* hash) {
+// Libera memória
+void freeHashTable(HashTable *table) {
 
-    for(int i = 0; i < TABLE_SIZE; i++) {
+    for (int i = 0; i < TABLE_SIZE; i++) {
 
-        HashNode* current =
-            hash->table[i];
+        HashNode *current = table->buckets[i];
 
-        while(current != NULL) {
+        while (current != NULL) {
 
-            HashNode* temp = current;
+            HashNode *temp = current;
 
             current = current->next;
 
