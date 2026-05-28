@@ -9,7 +9,7 @@
 #include "../include/history.h"
 #include "../include/colors.h"
 
-void showBanner() {
+void printBanner() {
 
     printf(CYAN);
     printf("=====================================================\n");
@@ -34,10 +34,10 @@ int main() {
     HistoryList history;
 
     initQueue(&queue);
-    initHash(&hash);
+    initHashTable(&hash);
     initHistory(&history);
 
-    showBanner();
+    printBanner();
 
     char line[256];
 
@@ -98,7 +98,7 @@ int main() {
                        packet.content);
 
                 if(searchHash(&hash,
-                              packet.destination)) {
+                              packet.id)) {
 
                     printf(GREEN
                            "Cache encontrado!\n"
@@ -112,8 +112,7 @@ int main() {
                            RESET);
 
                     insertHash(&hash,
-                               packet.destination,
-                               packet.id);
+                               packet);
                 }
 
                 addHistory(&history, packet);
@@ -129,7 +128,7 @@ int main() {
 
         else if(strcmp(command, "SHOW_CACHE") == 0) {
 
-            showHash(&hash);
+            printHashTable(&hash);
         }
 
         else if(strcmp(command, "SHOW_HISTORY") == 0) {
@@ -141,7 +140,7 @@ int main() {
     fclose(file);
 
     freeQueue(&queue);
-    freeHash(&hash);
+    freeHashTable(&hash);
     freeHistory(&history);
 
     printf(CYAN "\n====================================\n");
