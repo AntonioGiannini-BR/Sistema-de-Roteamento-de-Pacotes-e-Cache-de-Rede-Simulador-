@@ -1,35 +1,39 @@
-
 #ifndef HASH_TABLE_H
 #define HASH_TABLE_H
 
 #define TABLE_SIZE 10
 
-typedef struct HashNode {
-
+// Estrutura do pacote de rede
+typedef struct Packet {
+    int id;
     char ip[50];
-    int packetId;
+    char content[100];
+    int priority;
+} Packet;
 
-    struct HashNode* next;
-
+// Nó da lista encadeada
+typedef struct HashNode {
+    Packet data;
+    struct HashNode *next;
 } HashNode;
 
+// Estrutura principal da tabela hash
 typedef struct {
-
-    HashNode* table[TABLE_SIZE];
+    HashNode *buckets[TABLE_SIZE];
     int collisions;
-
 } HashTable;
 
-void initHash(HashTable* hash);
-int hashFunction(char* ip);
-void insertHash(HashTable* hash,
-                char* ip,
-                int packetId);
+// Funções da tabela hash
+void initHashTable(HashTable *table);
 
-int searchHash(HashTable* hash,
-               char* ip);
+int hashFunction(int key);
 
-void showHash(HashTable* hash);
-void freeHash(HashTable* hash);
+void insertHash(HashTable *table, Packet packet);
+
+Packet *searchHash(HashTable *table, int id);
+
+void printHashTable(HashTable *table);
+
+void freeHashTable(HashTable *table);
 
 #endif
