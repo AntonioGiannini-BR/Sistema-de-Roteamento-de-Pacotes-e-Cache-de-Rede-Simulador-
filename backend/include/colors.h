@@ -1,3 +1,7 @@
+/*
+ * Arquivo de cores ANSI usadas para destacar mensagens no terminal.
+ * Os macros abaixo não alteram a lógica do sistema; apenas formatam a saída visual.
+ */
 
 #ifndef COLORS_H
 #define COLORS_H
