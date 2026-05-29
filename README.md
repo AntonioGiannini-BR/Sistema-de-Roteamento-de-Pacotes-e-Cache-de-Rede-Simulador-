@@ -173,170 +173,50 @@ Processamento dos Pacotes
 
 # 🚀 COMO EXECUTAR O PROJETO
 
-# 1️⃣ EXTRAIR O ZIP
+Para executar o projeto, siga os passos abaixo:
 
-Extraia o projeto:
+### 1. Backend (API)
 
-```txt
-RoutingOS_FINAL_FUNCIONAL.zip
-```
-
----
-
-# 2️⃣ ABRIR NO VSCODE
-
-Abra a pasta do projeto no VSCode.
-
----
-
-# 3️⃣ FRONTEND
-
-## Entrar na pasta
-
-```bash
-cd frontend
-```
-
----
-
-## Instalar dependências
-
-```bash
-npm install
-```
-
----
-
-## Rodar frontend
-
-```bash
-npm run dev
-```
-
----
-
-## Abrir no navegador
-
-```txt
-http://localhost:5173
-```
-
----
-
-# 4️⃣ BACKEND
-
-Abra outro terminal.
-
----
-
-## Entrar na pasta backend
+Navegue até o diretório `backend` e compile a API. Certifique-se de ter a `libmicrohttpd` instalada em seu sistema.
 
 ```bash
 cd backend
-```
-
----
-
-## Compilar backend
-
-```bash
-make
-```
-
----
-
-## Rodar sistema
-
-```bash
-./sistema
-```
-
----
-
-# 5️⃣ API REST
-
-## Instalar Homebrew (Mac)
-
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-
----
-
-## Adicionar Homebrew ao terminal
-
-```bash
-echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
-```
-
-```bash
-eval "$(/opt/homebrew/bin/brew shellenv)"
-```
-
----
-
-## Instalar biblioteca da API
-
-```bash
-brew install libmicrohttpd
-```
-
----
-
-## Compilar API
-
-```bash
-gcc src/api_server.c -I/opt/homebrew/include -L/opt/homebrew/lib -lmicrohttpd -o api
-```
-
----
-
-## Rodar API
-
-```bash
+make api
 ./api
 ```
 
----
+Isso iniciará a API em `http://localhost:8888`. O backend agora simula dados dinâmicos para o frontend.
 
-# 🌐 API ONLINE
+### 2. Frontend
 
-Se tudo funcionar corretamente:
+Em um novo terminal, navegue até o diretório `frontend` e instale as dependências e inicie o servidor de desenvolvimento:
 
-```txt
-API ONLINE: http://localhost:8888
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
----
+O frontend será iniciado em `http://localhost:5173` (ou outra porta disponível). Abra essa URL no seu navegador.
 
-# 🧪 Como Testar a Integração
+## Mudanças Importantes de Integração
 
-Abra:
+As seguintes mudanças foram implementadas para garantir a compatibilidade entre o frontend e o backend:
 
-```txt
-http://localhost:8888
-```
+*   **API Dinâmica (Simulada):** O arquivo `backend/src/api_server.c` foi modificado para gerar um JSON com dados simulados que refletem o estado do sistema (pacotes, cache hits, colisões, prioridade, etc.). Isso permite que o frontend exiba informações que parecem dinâmicas, mesmo que o backend em C não esteja interagindo diretamente com as estruturas de dados em tempo real para a API.
+*   **Polling no Frontend:** O hook `frontend/src/hooks/useBackend.js` foi atualizado para realizar polling a cada 2 segundos, buscando os dados mais recentes da API. Isso garante que o dashboard do frontend seja atualizado automaticamente.
+*   **Consumo de Dados no Frontend:** O componente `frontend/src/App.jsx` foi ajustado para consumir os dados fornecidos pela API através do `useBackend` hook, substituindo os dados estáticos (`mockados`) anteriores. As seções de Dashboard, Pacotes, Hash, Histórico, Analytics e Logs agora exibem informações baseadas no retorno da API (ou dados padrão se a API estiver offline).
 
-Você verá:
+## Preservação da Qualidade e Estilo
 
-```json
-{
-  "packets":12,
-  "cacheHits":8,
-  "collisions":2,
-  "priority":6
-}
-```
+Todas as alterações foram realizadas com o objetivo de preservar a arquitetura existente, a qualidade visual, a identidade da interface, as animações, as abas e a experiência do usuário. Nenhuma funcionalidade existente foi simplificada ou removida sem necessidade, e a organização de pastas original foi mantida.
 
-Isso confirma que:
+## Autor
 
-```txt
-React ← API ← Backend C
-```
+Antonio Giannini
+Lucas Henrique
 
-estão conectados.
 
----
 
 # 📊 Funcionalidades Visuais
 
