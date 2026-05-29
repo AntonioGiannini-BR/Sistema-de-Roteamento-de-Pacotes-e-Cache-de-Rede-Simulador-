@@ -1,110 +1,40 @@
+/*
+ * Interface da tabela hash utilizada como cache de pacotes da rede.
+ * Aqui ficam as estruturas e protótipos usados pela implementação em hash_table.c.
+ */
+// Evita que este cabeçalho seja incluído mais de uma vez durante a compilação.
+#ifndef HASH_TABLE_H
+#define HASH_TABLE_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "../include/hash_table.h"
+#include "packet.h"
 
-// Inicializa a tabela hash
-void initHashTable(HashTable *table) {
+#define TABLE_SIZE 10
 
-    for (int i = 0; i < TABLE_SIZE; i++) {
-        table->buckets[i] = NULL;
-    }
+// Nó da lista encadeada
+// Define a estrutura de dados principal usada por este módulo.
+typedef struct HashNode {
+    Packet data;
+    struct HashNode *next;
+} HashNode;
 
-    table->collisions = 0;
-}
+// Estrutura principal da tabela hash
+typedef struct {
+    HashNode *buckets[TABLE_SIZE];
+    int collisions;
+} HashTable;
 
-// Função hash
-int hashFunction(int key) {
-    return key % TABLE_SIZE;
-}
+// Funções da tabela hash
+// Protótipos das funções disponíveis para outros arquivos do projeto.
+void initHashTable(HashTable *table);
 
-// Inserção usando encadeamento separado
-void insertHash(HashTable *table, Packet packet) {
+int hashFunction(int key);
 
-    int index = hashFunction(packet.id);
+void insertHash(HashTable *table, Packet packet);
 
-    // Detecta colisão
-    if (table->buckets[index] != NULL) {
-        table->collisions++;
-    }
+Packet *searchHash(HashTable *table, int id);
 
-    // Cria novo nó
-    HashNode *newNode = malloc(sizeof(HashNode));
+void printHashTable(HashTable *table);
 
-    if (newNode == NULL) {
-        printf("Erro de alocação de memória\n");
-        return;
-    }
+void freeHashTable(HashTable *table);
 
-    newNode->data = packet;
-
-    // Insere no início da lista
-    newNode->next = table->buckets[index];
-
-    table->buckets[index] = newNode;
-}
-
-// Busca um pacote na tabela hash
-Packet *searchHash(HashTable *table, int id) {
-
-    int index = hashFunction(id);
-
-    HashNode *current = table->buckets[index];
-
-    // Percorre lista encadeada
-    while (current != NULL) {
-
-        if (current->data.id == id) {
-            return &current->data;
-        }
-
-        current = current->next;
-    }
-
-    return NULL;
-}
-
-// Exibe tabela hash
-void printHashTable(HashTable *table) {
-
-    printf("\n========== TABELA HASH ==========\n");
-
-    for (int i = 0; i < TABLE_SIZE; i++) {
-
-        printf("[%d] -> ", i);
-
-        HashNode *current = table->buckets[i];
-
-        while (current != NULL) {
-
-            printf("ID:%d -> ",
-                   current->data.id);
-
-            current = current->next;
-        }
-
-        printf("NULL\n");
-    }
-
-    printf("\nTotal de colisões: %d\n",
-           table->collisions);
-}
-
-// Libera memória
-void freeHashTable(HashTable *table) {
-
-    for (int i = 0; i < TABLE_SIZE; i++) {
-
-        HashNode *current = table->buckets[i];
-
-        while (current != NULL) {
-
-            HashNode *temp = current;
-
-            current = current->next;
-
-            free(temp);
-        }
-    }
-}
+#endif
