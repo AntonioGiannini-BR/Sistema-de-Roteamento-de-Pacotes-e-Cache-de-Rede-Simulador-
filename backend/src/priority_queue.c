@@ -1,9 +1,14 @@
+/*
+ * Implementação da fila de prioridade.
+ * Pacotes com prioridade maior são posicionados antes dos demais.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "../include/priority_queue.h"
 
+// Inicializa a fila vazia e zera os contadores de pacotes.
 void initQueue(PriorityQueue* queue) {
 
     queue->front = NULL;
@@ -11,8 +16,10 @@ void initQueue(PriorityQueue* queue) {
     queue->priorityPackets = 0;
 }
 
+// Insere um pacote mantendo a ordem de prioridade da fila.
 void enqueue(PriorityQueue* queue, Packet packet) {
 
+        // Aloca um novo nó para armazenar o pacote recebido.
     QueueNode* newNode =
         (QueueNode*) malloc(sizeof(QueueNode));
 
@@ -21,9 +28,11 @@ void enqueue(PriorityQueue* queue, Packet packet) {
 
     queue->totalPackets++;
 
+        // Conta separadamente os pacotes marcados como prioridade alta.
     if(packet.priority == 1)
         queue->priorityPackets++;
 
+        // Caso a fila esteja vazia ou o novo pacote tenha prioridade maior, ele vira o primeiro.
     if(queue->front == NULL ||
        packet.priority >
        queue->front->packet.priority) {
@@ -37,6 +46,7 @@ void enqueue(PriorityQueue* queue, Packet packet) {
 
     QueueNode* current = queue->front;
 
+        // Percorre a fila até encontrar a posição correta pela prioridade.
     while(current->next != NULL &&
           current->next->packet.priority >=
           packet.priority) {
@@ -49,6 +59,7 @@ void enqueue(PriorityQueue* queue, Packet packet) {
     current->next = newNode;
 }
 
+// Remove o pacote da frente da fila e o devolve por referência.
 int dequeue(PriorityQueue* queue,
             Packet* packet) {
 
@@ -66,6 +77,7 @@ int dequeue(PriorityQueue* queue,
     return 1;
 }
 
+// Libera todos os nós restantes da fila.
 void freeQueue(PriorityQueue* queue) {
 
     QueueNode* current = queue->front;
