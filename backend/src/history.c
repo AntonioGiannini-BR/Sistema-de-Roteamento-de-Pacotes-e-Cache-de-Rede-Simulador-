@@ -1,3 +1,6 @@
+/*
+ * Implementação do histórico de processamento usando lista duplamente encadeada.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,6 +8,7 @@
 #include "../include/history.h"
 #include "../include/colors.h"
 
+// Prepara a lista de histórico vazia, sem início, sem fim e sem pacotes processados.
 void initHistory(HistoryList* list) {
 
     list->head = NULL;
@@ -12,9 +16,11 @@ void initHistory(HistoryList* list) {
     list->totalProcessed = 0;
 }
 
+// Adiciona um pacote processado ao final da lista de histórico.
 void addHistory(HistoryList* list,
                 Packet packet) {
 
+        // Cria um novo nó para armazenar o pacote no histórico.
     HistoryNode* newNode =
         (HistoryNode*) malloc(sizeof(HistoryNode));
 
@@ -23,6 +29,7 @@ void addHistory(HistoryList* list,
     newNode->next = NULL;
     newNode->prev = list->tail;
 
+        // Se já existe último elemento, conecta o antigo final ao novo nó.
     if(list->tail != NULL) {
 
         list->tail->next = newNode;
@@ -38,6 +45,7 @@ void addHistory(HistoryList* list,
     list->totalProcessed++;
 }
 
+// Exibe todos os pacotes registrados no histórico de processamento.
 void showHistory(HistoryList* list) {
 
     printf(MAGENTA
@@ -48,6 +56,7 @@ void showHistory(HistoryList* list) {
 
     HistoryNode* current = list->head;
 
+        // Percorre a lista do início ao fim imprimindo cada pacote processado.
     while(current != NULL) {
 
         printf(GREEN
@@ -68,6 +77,7 @@ void showHistory(HistoryList* list) {
            list->totalProcessed);
 }
 
+// Libera todos os nós da lista de histórico.
 void freeHistory(HistoryList* list) {
 
     HistoryNode* current = list->head;
